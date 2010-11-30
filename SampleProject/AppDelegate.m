@@ -25,37 +25,37 @@
 
 - (void)applicationDidFinishLaunching:(UIApplication *)application {
 
-	{
-		NSMutableDictionary *house = [NSMutableDictionary dictionary];
-		[house setObject:[NSNumber numberWithUnsignedInteger:5] forKey:@"capacity"];
-		
-		NSMutableDictionary *fluffy = [NSMutableDictionary dictionary];
-		[fluffy setObject:@"Fluffy" forKey:@"name"];
-		[fluffy setObject:[NSNumber numberWithUnsignedInteger:9] forKey:@"livesRemaining"];
-
-		NSMutableDictionary *mrWiggles = [NSMutableDictionary dictionary];
-		[mrWiggles setObject:@"Mr. Wiggles" forKey:@"name"];
-		[mrWiggles setObject:[NSNumber numberWithUnsignedInteger:9] forKey:@"livesRemaining"];
-		
-		[house setObject:[NSArray arrayWithObjects:fluffy,mrWiggles,nil] forKey:@"cats"];
-
-		NSLog(@"Dict: \n%@", house);
-	}
+	House *house = [House make];
+	house.capacity = 5;
 	
-	{
-		House *house = [House make];
-		house.capacity = 5;
-		
-		Cat *fluffy = [Cat make];
-		fluffy.name = @"Fluffy";
-		
-		Cat *mrWiggles = [Cat make];
-		mrWiggles.name = @"Mr. Wiggles";
-		
-		house.cats = [NSArray arrayWithObjects:fluffy,mrWiggles,nil];
-		
-		NSLog(@"My House: \n%@", house);
-	}
+	Cat *fluffy = [Cat make];
+	fluffy.name = @"Fluffy";
+	
+	Cat *mrWiggles = [Cat make];
+	mrWiggles.name = @"Mr. Wiggles";
+	
+	house.cats = [NSArray arrayWithObjects:fluffy,mrWiggles,nil];
+	
+	NSLog(@"My House: \n%@", house);
+}
+
+
+- (void)equivalentNSDictionaryCodeThatSucks {
+
+	NSMutableDictionary *house = [NSMutableDictionary dictionary];
+	[house setObject:[NSNumber numberWithUnsignedInteger:5] forKey:@"capacity"];
+	
+	NSMutableDictionary *fluffy = [NSMutableDictionary dictionary];
+	[fluffy setObject:@"Fluffy" forKey:@"name"];
+	[fluffy setObject:[NSNumber numberWithUnsignedInteger:9] forKey:@"livesRemaining"];
+	
+	NSMutableDictionary *mrWiggles = [NSMutableDictionary dictionary];
+	[mrWiggles setObject:@"Mr. Wiggles" forKey:@"name"];
+	[mrWiggles setObject:[NSNumber numberWithUnsignedInteger:9] forKey:@"livesRemaining"];
+	
+	[house setObject:[NSArray arrayWithObjects:fluffy,mrWiggles,nil] forKey:@"cats"];
+	
+	NSLog(@"Dict: \n%@", house);
 }
 
 @end
