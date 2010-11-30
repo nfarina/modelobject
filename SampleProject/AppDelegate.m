@@ -24,19 +24,38 @@
 @implementation AppDelegate
 
 - (void)applicationDidFinishLaunching:(UIApplication *)application {
+
+	{
+		NSMutableDictionary *house = [NSMutableDictionary dictionary];
+		[house setObject:[NSNumber numberWithUnsignedInteger:5] forKey:@"capacity"];
+		
+		NSMutableDictionary *fluffy = [NSMutableDictionary dictionary];
+		[fluffy setObject:@"Fluffy" forKey:@"name"];
+		[fluffy setObject:[NSNumber numberWithUnsignedInteger:9] forKey:@"livesRemaining"];
+
+		NSMutableDictionary *mrWiggles = [NSMutableDictionary dictionary];
+		[mrWiggles setObject:@"Mr. Wiggles" forKey:@"name"];
+		[mrWiggles setObject:[NSNumber numberWithUnsignedInteger:9] forKey:@"livesRemaining"];
+		
+		[house setObject:[NSArray arrayWithObjects:fluffy,mrWiggles,nil] forKey:@"cats"];
+
+		NSLog(@"Dict: \n%@", house);
+	}
 	
-	House *myHouse = [[[House alloc] init] autorelease];
-	myHouse.capacity = 5;
-	
-	Cat *fluffy = [[[Cat alloc] init] autorelease];
-	fluffy.name = @"Fluffy";
-	
-	Cat *mrWiggles = [[[Cat alloc] init] autorelease];
-	mrWiggles.name = @"Mr. Wiggles";
-	
-	myHouse.cats = [NSArray arrayWithObjects:fluffy,mrWiggles,nil];
-	
-	NSLog(@"My House: %@", myHouse);
+	{
+		House *house = [House make];
+		house.capacity = 5;
+		
+		Cat *fluffy = [Cat make];
+		fluffy.name = @"Fluffy";
+		
+		Cat *mrWiggles = [Cat make];
+		mrWiggles.name = @"Mr. Wiggles";
+		
+		house.cats = [NSArray arrayWithObjects:fluffy,mrWiggles,nil];
+		
+		NSLog(@"My House: \n%@", house);
+	}
 }
 
 @end

@@ -3,6 +3,10 @@
 
 @implementation SMModelObject
 
++ (id)make {
+	return [[[self alloc] init] autorelease];
+}
+
 - (void)enumerateIvarsUsingBlock:(void (^)(Ivar var, NSString *name, BOOL *cancel))block {
 
 	BOOL cancel = NO;
@@ -85,6 +89,51 @@
 	}];
 
 	return hash;
+}
+
+- (void) writeToDescription:(NSMutableString *)description withIndent:(NSUInteger)indent {
+	
+	[description appendFormat:@"<%@ %p", NSStringFromClass([self class]), self];
+	
+	void (^addLineBreak)() = ^ {
+		[description appendString:@"\n"];
+		for (int i=0;i<indent;i++) [description appendString:@"\t"];
+	};
+	
+	[self enumerateIvarsUsingBlock:^(Ivar var, NSString *name, BOOL *cancel) {
+		
+		addLineBreak();
+		id object = [self valueForKey:name];
+		
+		if ([object isKindOfClass:[SMModelObject class]]) {
+			[object writeToDescription:description withIndent:indent+1];
+		}
+		else if ([object isKindOfClass:[NSArray class]]) {
+			
+			[description appendFormat:@"%@ =", name];
+			
+			for (id child in object) {
+				addLineBreak();
+				[description appendString:@"\t"];
+				
+				if ([child isKindOfClass:[SMModelObject class]])
+					[child writeToDescription:description withIndent:indent+2];
+				else
+					[description appendString:[child description]];
+			}
+		}
+		else {
+			[description appendFormat:@"%@ = %@", name, object];
+		}
+	}];
+		
+	[description appendString:@">"];
+}
+
+- (NSString *) description {
+	NSMutableString *description = [NSMutableString string];
+	[self writeToDescription:description withIndent:1];
+	return description;
 }
 
 @end
