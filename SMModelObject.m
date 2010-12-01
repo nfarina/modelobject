@@ -3,10 +3,12 @@
 
 @implementation SMModelObject
 
+// Handy shortcut for making new autoreleased model objects.
 + (id)make {
 	return [[[self alloc] init] autorelease];
 }
 
+// Helper for easily enumerating through our instance variables.
 - (void)enumerateIvarsUsingBlock:(void (^)(Ivar var, NSString *name, BOOL *cancel))block {
 
 	BOOL cancel = NO;
@@ -27,6 +29,7 @@
 	}
 }
 
+// NSCoder implementation, for unarchiving
 - (id) initWithCoder:(NSCoder *)aDecoder {
 	if (self = [super init]) {
 
@@ -37,6 +40,7 @@
 	return self;
 }
 
+// NSCoder implementation, for archiving
 - (void) encodeWithCoder:(NSCoder *)aCoder {
 
 	[self enumerateIvarsUsingBlock:^(Ivar var, NSString *name, BOOL *cancel) {
@@ -44,15 +48,17 @@
 	}];
 }
 
+// Automatic dealloc.
 - (void)dealloc
 {
 	[self enumerateIvarsUsingBlock:^(Ivar var, NSString *name, BOOL *cancel) {
-		if (ivar_getTypeEncoding(var)[0] == _C_ID) [self setValue:nil forKey:name];
+		[self setValue:nil forKey:name];
 	}];
 	
 	[super dealloc];
 }
 
+// NSCopying implementation
 - (id) copyWithZone:(NSZone *)zone {
 	
 	id copied = [[[self class] alloc] init];
@@ -62,6 +68,7 @@
 	return copied;
 }
 
+// Override isEqual to compare model objects by value instead of just by pointer.
 - (BOOL) isEqual:(id)other {
 
 	__block BOOL equal = NO;
@@ -80,6 +87,8 @@
 	return equal;
 }
 
+// Must override hash as well, this is taken directly from RMModelObject, basically
+// classes with the same layout return the same number.
 - (NSUInteger)hash
 {
 	__block NSUInteger hash = 0;
@@ -91,6 +100,7 @@
 	return hash;
 }
 
+// Prints description in a nicely-formatted and indented manner.
 - (void) writeToDescription:(NSMutableString *)description withIndent:(NSUInteger)indent {
 	
 	[description appendFormat:@"<%@ %p", NSStringFromClass([self class]), self];
@@ -130,6 +140,7 @@
 	[description appendString:@">"];
 }
 
+// Override description for helpful debugging.
 - (NSString *) description {
 	NSMutableString *description = [NSMutableString string];
 	[self writeToDescription:description withIndent:1];
