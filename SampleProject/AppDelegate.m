@@ -1,23 +1,19 @@
 #import "AppDelegate.h"
 #import "SMModelObject.h"
 
-@interface House : SMModelObject
-@property (nonatomic, assign) NSUInteger capacity;
-@property (nonatomic, copy) NSArray *cats;
+@interface SearchResults : SMModelObject
+@property (nonatomic, assign) NSUInteger totalResults;
+@property (nonatomic, copy) NSArray *books;
 @end
 
-@implementation House
+@implementation SearchResults
 @end
 
-@interface Cat : SMModelObject
-@property (nonatomic, copy) NSString *name;
-@property (nonatomic, assign) NSUInteger livesRemaining;
-- (void)die;
+@interface Book : SMModelObject
+@property (nonatomic, copy) NSString *title;
+@property (nonatomic, assign) float price;
 @end
-
-@implementation Cat
-- (id)init { if (self = [super init]) livesRemaining = 9; return self; }
-- (void) die { livesRemaining--; }
+@implementation Book
 @end
 
 
@@ -25,69 +21,40 @@
 
 - (void)applicationDidFinishLaunching:(UIApplication *)application {
 
-	House *house = [House make];
-	house.capacity = 5;
+	SearchResults *results = [SearchResults make];
+	results.totalResults = 74;
 	
-	Cat *fluffy = [Cat make];
-	fluffy.name = @"Fluffy";
+	Book *harryPotter = [Book make];
+	harryPotter.title = @"Harry Potter and the Half-Blood Prince";
+	harryPotter.price = 29.95;
 	
-	Cat *mrWiggles = [Cat make];
-	mrWiggles.name = @"Mr. Wiggles";
+	Book *twilight = [Book make];
+	twilight.title = @"Twilight";
+	twilight.price = 19.95;
 	
-	house.cats = [NSArray arrayWithObjects:fluffy,mrWiggles,nil];
+	results.books = [NSArray arrayWithObjects:harryPotter,twilight,nil];
 	
-	NSLog(@"My House: \n%@", house);
+	NSLog(@"Search Results: \n%@", results);
 }
 
 
 - (void)equivalentNSDictionaryCodeThatSucks {
 
-	NSMutableDictionary *house = [NSMutableDictionary dictionary];
-	[house setObject:[NSNumber numberWithUnsignedInteger:5] forKey:@"capacity"];
+	NSMutableDictionary *searchResults = [NSMutableDictionary dictionary];
+	[searchResults setObject:[NSNumber numberWithUnsignedInteger:74] forKey:@"totalResults"];
 	
-	NSMutableDictionary *fluffy = [NSMutableDictionary dictionary];
-	[fluffy setObject:@"Fluffy" forKey:@"name"];
-	[fluffy setObject:[NSNumber numberWithUnsignedInteger:9] forKey:@"livesRemaining"];
+	NSMutableDictionary *harryPotter = [NSMutableDictionary dictionary];
+	[harryPotter setObject:@"Harry Potter and the Half-Blood Prince" forKey:@"title"];
+	[harryPotter setObject:[NSNumber numberWithFloat:29.95] forKey:@"price"];
 	
-	NSMutableDictionary *mrWiggles = [NSMutableDictionary dictionary];
-	[mrWiggles setObject:@"Mr. Wiggles" forKey:@"name"];
-	[mrWiggles setObject:[NSNumber numberWithUnsignedInteger:9] forKey:@"livesRemaining"];
+	NSMutableDictionary *twilight = [NSMutableDictionary dictionary];
+	[twilight setObject:@"Twilight" forKey:@"title"];
+	[twilight setObject:[NSNumber numberWithFloat:19.95] forKey:@"price"];
 	
-	[house setObject:[NSArray arrayWithObjects:fluffy,mrWiggles,nil] forKey:@"cats"];
+	[searchResults setObject:[NSArray arrayWithObjects:harryPotter,twilight,nil] forKey:@"results"];
 	
-	NSLog(@"Dict: \n%@", house);
+	NSLog(@"Results: \n%@", searchResults);
+	
 }
 
 @end
-
-
-/*
- Dog *fido = [[Dog alloc] init];
- fido.name = @"Fido";
- 
- Animal *nick = [[Animal alloc] init];
- nick.name = @"Nick";
- 
- fido.owner = nick;
- fido.lives = 7;
- 
- NSLog(@"Copy nick");
- Animal *zombieNick = [[nick copy] autorelease];
- NSLog(@"Zombie nick's name is %@", zombieNick.name);
- 
- NSLog(@"Encode fido");
- [NSKeyedArchiver archiveRootObject:fido toFile:@"/test.txt"];
- 
- NSLog(@"Decode fido");
- Dog *zombieFido = [NSKeyedUnarchiver unarchiveObjectWithFile:@"/test.txt"];
- NSLog(@"Zombie dog's name is %@ and he has %i lives.", zombieFido.name, zombieFido.lives);
- 
- NSLog(@"Compare fido to zombieFido. Equal? %i. Hash? %i and %i.", [zombieFido isEqual:fido], [zombieFido hash], [fido hash]);
- 
- NSLog(@"Release nick.");
- [nick release];
- 
- NSLog(@"Release fido.");
- [fido release]; 
-
-*/
