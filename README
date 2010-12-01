@@ -1,3 +1,8 @@
-ObjC Model Object class using new language features.
+SMModelObject is a very handy superclass for "Model Object" types.
+It requires the 64-bit runtime and LLVM Clang >=1.6.
 
-More docs to come, still writing blog post.
+Additionally, as of this writing, you'll need to add the compiler flags "-Xclang -fobjc-nonfragile-abi2" in that exact
+order if you don't want to have to write @synthesize yourself. This shouldn't be necessary after the official Clang 2.0 release.
+
+Much, much credit given to André Pang and his phenomenal RMModelObject which was the inspiration for this class.
+https://github.com/andrep/RMModelObject
