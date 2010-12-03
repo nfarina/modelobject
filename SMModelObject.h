@@ -33,7 +33,4 @@
 // https://github.com/andrep/RMModelObject
 
 @interface SMModelObject : NSObject<NSCoding,NSCopying>
-
-+ (id)make; // equivalent to [[[Class alloc] init] autorelease]
-
 @end

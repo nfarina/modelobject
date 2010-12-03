@@ -16,19 +16,18 @@
 @implementation Book
 @end
 
-
 @implementation AppDelegate
 
 - (void)applicationDidFinishLaunching:(UIApplication *)application {
 
-	SearchResults *results = [SearchResults make];
+	SearchResults *results = [SearchResults new];
 	results.totalResults = 74;
 	
-	Book *harryPotter = [Book make];
+	Book *harryPotter = [Book new];
 	harryPotter.title = @"Harry Potter and the Half-Blood Prince";
 	harryPotter.price = 29.95;
 	
-	Book *twilight = [Book make];
+	Book *twilight = [Book new];
 	twilight.title = @"Twilight";
 	twilight.price = 19.95;
 	

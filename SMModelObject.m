@@ -3,11 +3,6 @@
 
 @implementation SMModelObject
 
-// Handy shortcut for making new autoreleased model objects.
-+ (id)make {
-	return [[[self alloc] init] autorelease];
-}
-
 // Helper for easily enumerating through our instance variables.
 - (void)enumerateIvarsUsingBlock:(void (^)(Ivar var, NSString *name, BOOL *cancel))block {
 
@@ -52,7 +47,7 @@
 - (void)dealloc
 {
 	[self enumerateIvarsUsingBlock:^(Ivar var, NSString *name, BOOL *cancel) {
-		[self setValue:nil forKey:name];
+		if (ivar_getTypeEncoding(var)[0] == _C_ID) [self setValue:nil forKey:name];
 	}];
 	
 	[super dealloc];
@@ -100,19 +95,20 @@
 	return hash;
 }
 
+- (void)writeLineBreakToString:(NSMutableString *)string withTabs:(NSUInteger)tabCount {
+	[string appendString:@"\n"];
+	for (int i=0;i<tabCount;i++) [string appendString:@"\t"];
+}
+
 // Prints description in a nicely-formatted and indented manner.
 - (void) writeToDescription:(NSMutableString *)description withIndent:(NSUInteger)indent {
 	
 	[description appendFormat:@"<%@ %p", NSStringFromClass([self class]), self];
 	
-	void (^addLineBreak)() = ^ {
-		[description appendString:@"\n"];
-		for (int i=0;i<indent;i++) [description appendString:@"\t"];
-	};
-	
 	[self enumerateIvarsUsingBlock:^(Ivar var, NSString *name, BOOL *cancel) {
 		
-		addLineBreak();
+		[self writeLineBreakToString:description withTabs:indent];
+		
 		id object = [self valueForKey:name];
 		
 		if ([object isKindOfClass:[SMModelObject class]]) {
@@ -123,8 +119,7 @@
 			[description appendFormat:@"%@ =", name];
 			
 			for (id child in object) {
-				addLineBreak();
-				[description appendString:@"\t"];
+				[self writeLineBreakToString:description withTabs:indent+1];
 				
 				if ([child isKindOfClass:[SMModelObject class]])
 					[child writeToDescription:description withIndent:indent+2];
