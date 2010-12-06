@@ -9,25 +9,31 @@
 @implementation SearchResults
 @end
 
-@interface Book : SMModelObject
+@interface Book : NSObject
 @property (nonatomic, copy) NSString *title;
 @property (nonatomic, assign) float price;
 @end
 @implementation Book
+
+- (void)dealloc {
+	self.title = nil;
+	[super dealloc];
+}
+
 @end
 
 @implementation AppDelegate
 
 - (void)applicationDidFinishLaunching:(UIApplication *)application {
 
-	SearchResults *results = [SearchResults new];
+	SearchResults *results = [[SearchResults new] autorelease];
 	results.totalResults = 74;
 	
-	Book *harryPotter = [Book new];
+	Book *harryPotter = [[Book new] autorelease];
 	harryPotter.title = @"Harry Potter and the Half-Blood Prince";
 	harryPotter.price = 29.95;
 	
-	Book *twilight = [Book new];
+	Book *twilight = [[Book new] autorelease];
 	twilight.title = @"Twilight";
 	twilight.price = 19.95;
 	
