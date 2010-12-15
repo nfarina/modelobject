@@ -127,6 +127,22 @@
 					[description appendString:[child description]];
 			}
 		}
+		else if ([object isKindOfClass:[NSDictionary class]]) {
+			
+			[description appendFormat:@"%@ =", name];
+			
+			for (id key in object) {
+				addLineBreak();
+				[description appendFormat:@"\t%@ = ",key];
+				
+				id child = [object objectForKey:key];
+				
+				if ([child isKindOfClass:[SMModelObject class]])
+					[child writeToDescription:description withIndent:indent+2];
+				else
+					[description appendString:[child description]];
+			}
+		}
 		else {
 			[description appendFormat:@"%@ = %@", name, object];
 		}
