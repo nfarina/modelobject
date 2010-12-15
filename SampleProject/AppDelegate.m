@@ -9,9 +9,10 @@
 @implementation SearchResults
 @end
 
-@interface Book : NSObject
+@interface Book : SMModelObject
 @property (nonatomic, copy) NSString *title;
 @property (nonatomic, assign) float price;
+@property (nonatomic, copy) NSDictionary *authors;
 @end
 @implementation Book
 
@@ -32,6 +33,10 @@
 	Book *harryPotter = [[Book new] autorelease];
 	harryPotter.title = @"Harry Potter and the Half-Blood Prince";
 	harryPotter.price = 29.95;
+	harryPotter.authors = [NSDictionary dictionaryWithObjectsAndKeys:
+						   @"J.K. Rowling",@"Primary",
+						   @"Bob's your uncle",@"Secondary",
+						   nil];
 	
 	Book *twilight = [[Book new] autorelease];
 	twilight.title = @"Twilight";

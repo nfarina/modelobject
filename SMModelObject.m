@@ -132,7 +132,7 @@
 			[description appendFormat:@"%@ =", name];
 			
 			for (id key in object) {
-				addLineBreak();
+				[self writeLineBreakToString:description withTabs:indent];
 				[description appendFormat:@"\t%@ = ",key];
 				
 				id child = [object objectForKey:key];
