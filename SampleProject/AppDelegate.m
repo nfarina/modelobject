@@ -15,19 +15,15 @@
 @property (nonatomic, copy) NSDictionary *authors;
 @end
 @implementation Book
-
-- (void)dealloc {
-	self.title = nil;
-	[super dealloc];
-}
-
 @end
 
 @implementation AppDelegate
 
 - (void)applicationDidFinishLaunching:(UIApplication *)application {
 
-	SearchResults *results = [[SearchResults new] autorelease];
+	// Test creation of new objects
+	
+	SearchResults *results = [SearchResults new];
 	results.totalResults = 74;
 	
 	Book *harryPotter = [[Book new] autorelease];
@@ -44,7 +40,39 @@
 	
 	results.books = [NSArray arrayWithObjects:harryPotter,twilight,nil];
 	
+	// Test the description method
+	
 	NSLog(@"Search Results: \n%@", results);
+	
+	// Test that we can enumerate through an object's property names
+	
+	for (NSString *key in twilight)
+		NSLog(@"Twilight has a member named: %@", key);
+	
+	// Test that copy produces a new object with copied members.
+	
+	SearchResults *copied = [[results copy] autorelease];
+	
+	NSLog(@"Copied: %@", copied);
+	NSLog(@"Copied results have same pointer? %i but are they equal? %i", copied == results, [copied isEqual:results]);
+	
+	// Test that encoding/decoding produces a copied object that satisfies isEqual.
+	
+	NSData *data = [NSKeyedArchiver archivedDataWithRootObject:results];
+	
+	NSLog(@"Encoded to data of length %i", [data length]);
+	
+	SearchResults *decoded = [NSKeyedUnarchiver unarchiveObjectWithData:data];
+	
+	NSLog(@"Decoded: %@", decoded);
+	NSLog(@"Encoded results are equal? %i", [decoded isEqual:results]);
+	
+	// Test that releasing results releases its "books" member.
+	
+	NSArray *books = results.books;
+	int booksRetainCountBeforeParentRelease = [books retainCount];
+	[results release];
+	NSLog(@"Results released. Books array retain count was %i, now %i", booksRetainCountBeforeParentRelease, [books retainCount]);
 }
 
 

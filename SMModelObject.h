@@ -32,5 +32,5 @@
 // Much, much credit given to André Pang and his phenomenal RMModelObject which was the inspiration for this class.
 // https://github.com/andrep/RMModelObject
 
-@interface SMModelObject : NSObject<NSCoding,NSCopying>
+@interface SMModelObject : NSObject<NSCoding,NSCopying,NSFastEnumeration>
 @end

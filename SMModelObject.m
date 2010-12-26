@@ -1,36 +1,59 @@
 #import "SMModelObject.h"
 #import <objc/runtime.h>
 
+// Holds metadata for subclasses of SMModelObject
+static NSMutableDictionary *keyNames = nil, *nillableKeyNames = nil;
+
 @implementation SMModelObject
 
-// Helper for easily enumerating through our instance variables.
-- (void)enumerateIvarsUsingBlock:(void (^)(Ivar var, NSString *name, BOOL *cancel))block {
+// Before this class is first accessed, we'll need to build up our associated metadata, basically
+// just a list of all our property names so we can quickly enumerate through them for various methods.
+// Also we maintain a separate list of property names that can be set to nil (type ID) for fast dealloc.
++ (void) initialize {
 
-	BOOL cancel = NO;
+	if (!keyNames)
+		keyNames = [NSMutableDictionary new], nillableKeyNames = [NSMutableDictionary new];
 	
-	for (Class cls = [self class]; !cancel && cls != [SMModelObject class]; cls = [cls superclass]) {
+	NSMutableArray *names = [NSMutableArray new], *nillableNames = [NSMutableArray new];
+	
+	for (Class cls = self; cls != [SMModelObject class]; cls = [cls superclass]) {
 		
 		unsigned int varCount;
 		Ivar *vars = class_copyIvarList(cls, &varCount);
 		
-		for (int i = 0; !cancel && i < varCount; i++) {
+		for (int i = 0; i < varCount; i++) {
 			Ivar var = vars[i];
 			NSString *name = [[NSString alloc] initWithUTF8String:ivar_getName(var)];
-			block(var, name, &cancel);
+			[names addObject:name];
+			
+			if (ivar_getTypeEncoding(var)[0] == _C_ID)
+				[nillableNames addObject:name];
+			
 			[name release];
 		}
 		
 		free(vars);
 	}
+	
+	[keyNames setObject:names forKey:self];
+	[nillableKeyNames setObject:nillableNames forKey:self];
+	[names release], [nillableNames release];
+}
+
+- (NSArray *)allKeys {
+	return [keyNames objectForKey:[self class]];
+}
+
+- (NSArray *)nillableKeys {
+	return [nillableKeyNames objectForKey:[self class]];
 }
 
 // NSCoder implementation, for unarchiving
 - (id) initWithCoder:(NSCoder *)aDecoder {
 	if (self = [super init]) {
 
-		[self enumerateIvarsUsingBlock:^(Ivar var, NSString *name, BOOL *cancel) {
+		for (NSString *name in [self allKeys])
 			[self setValue:[aDecoder decodeObjectForKey:name] forKey:name];
-		}];
 	}
 	return self;
 }
@@ -38,17 +61,14 @@
 // NSCoder implementation, for archiving
 - (void) encodeWithCoder:(NSCoder *)aCoder {
 
-	[self enumerateIvarsUsingBlock:^(Ivar var, NSString *name, BOOL *cancel) {
+	for (NSString *name in [self allKeys])
 		[aCoder encodeObject:[self valueForKey:name] forKey:name];
-	}];
 }
 
 // Automatic dealloc.
-- (void)dealloc
-{
-	[self enumerateIvarsUsingBlock:^(Ivar var, NSString *name, BOOL *cancel) {
-		if (ivar_getTypeEncoding(var)[0] == _C_ID) [self setValue:nil forKey:name];
-	}];
+- (void) dealloc {
+	for (NSString *name in [self nillableKeys])
+		[self setValue:nil forKey:name];
 	
 	[super dealloc];
 }
@@ -57,42 +77,41 @@
 - (id) copyWithZone:(NSZone *)zone {
 	
 	id copied = [[[self class] alloc] init];
-	[self enumerateIvarsUsingBlock:^(Ivar var, NSString *name, BOOL *cancel) {
+	
+	for (NSString *name in [self allKeys])
 		[copied setValue:[self valueForKey:name] forKey:name];
-	}];
+	
 	return copied;
+}
+
+// We implement the NSFastEnumeration protocol to behave like an NSDictionary - the enumerated values are our property (key) names.
+- (NSUInteger) countByEnumeratingWithState:(NSFastEnumerationState *)state objects:(id *)stackbuf count:(NSUInteger)len {
+	return [[self allKeys] countByEnumeratingWithState:state objects:stackbuf count:len];
 }
 
 // Override isEqual to compare model objects by value instead of just by pointer.
 - (BOOL) isEqual:(id)other {
 
-	__block BOOL equal = NO;
-	
 	if ([other isKindOfClass:[self class]]) {
 		
-		equal = YES;
-		[self enumerateIvarsUsingBlock:^(Ivar var, NSString *name, BOOL *cancel) {
-			if (![[self valueForKey:name] isEqual:[other valueForKey:name]]) {
-				equal = NO;
-				*cancel = YES;
-			}
-		}];
+		for (NSString *name in [self allKeys]) {
+			id a = [self valueForKey:name];
+			id b = [other valueForKey:name];
+			
+			// extra check so a == b == nil is considered equal
+			if ((a || b) && ![a isEqual:b])
+				return NO;
+		}
+		
+		return YES;
 	}
-	
-	return equal;
+	else return NO;
 }
 
 // Must override hash as well, this is taken directly from RMModelObject, basically
 // classes with the same layout return the same number.
-- (NSUInteger)hash
-{
-	__block NSUInteger hash = 0;
-
-	[self enumerateIvarsUsingBlock:^(Ivar var, NSString *name, BOOL *cancel) {
-		hash += (NSUInteger)var;
-	}];
-
-	return hash;
+- (NSUInteger)hash {
+	return (NSUInteger)[self allKeys];
 }
 
 - (void)writeLineBreakToString:(NSMutableString *)string withTabs:(NSUInteger)tabCount {
@@ -105,7 +124,7 @@
 	
 	[description appendFormat:@"<%@ %p", NSStringFromClass([self class]), self];
 	
-	[self enumerateIvarsUsingBlock:^(Ivar var, NSString *name, BOOL *cancel) {
+	for (NSString *name in [self allKeys]) {
 		
 		[self writeLineBreakToString:description withTabs:indent];
 		
@@ -146,7 +165,7 @@
 		else {
 			[description appendFormat:@"%@ = %@", name, object];
 		}
-	}];
+	}
 		
 	[description appendString:@">"];
 }
