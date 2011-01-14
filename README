@@ -1,3 +1,23 @@
+
+==============
+IMPORTANT NOTE
+
+Apple has removed the "-objc-nonfragile-abi2" flag from the latest Xcode 4 DP6 release and have stated that,
+although they continue to work on it, it will not be present in the GM release of Xcode 4.
+
+This means that you can no longer omit the @synthesize from your classes, including SMModelObject.
+Everything still works, you just need to write @synthesize on your own. I've updated the sample project to
+reflect this.
+
+If you want to pressure Apple to include this feature in the GM (which I've done), then please clone my rdar bug which I've
+posted here:
+http://openradar.appspot.com/8857279
+
+Just log onto https://bugreport.apple.com/ and create your own copied version of my bug report above.
+Apple reads EVERY bug report they receive and your cloned report will count as an extra vote for this feature.
+==============
+
+
 SMModelObject is a very handy superclass for "Model Object" types.
 It requires the 64-bit runtime, either iOS (any version) or Snow Leopard, and LLVM Clang >=1.6.
 

@@ -5,8 +5,8 @@
 @property (nonatomic, assign) NSUInteger totalResults;
 @property (nonatomic, copy) NSArray *books;
 @end
-
 @implementation SearchResults
+@synthesize totalResults, books;
 @end
 
 @interface Book : SMModelObject
@@ -15,6 +15,7 @@
 @property (nonatomic, copy) NSDictionary *authors;
 @end
 @implementation Book
+@synthesize title, price, authors;
 @end
 
 @implementation AppDelegate
