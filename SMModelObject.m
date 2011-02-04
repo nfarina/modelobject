@@ -50,8 +50,8 @@ static NSMutableDictionary *keyNames = nil, *nillableKeyNames = nil;
 
 // NSCoder implementation, for unarchiving
 - (id) initWithCoder:(NSCoder *)aDecoder {
-	if (self = [super init]) {
-
+    self = [super init];
+    if (self) {
 		for (NSString *name in [self allKeys])
 			[self setValue:[aDecoder decodeObjectForKey:name] forKey:name];
 	}
