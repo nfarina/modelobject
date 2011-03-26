@@ -23,11 +23,6 @@
 */
 
 // SMModelObject is a very handy superclass for "Model Object" types.
-// It requires the 64-bit runtime, either iOS (any version) or Snow Leopard, and LLVM Clang >=1.6.
-
-// Additionally, as of this writing, you'll need to add the compiler flags "-Xclang -fobjc-nonfragile-abi2" in that exact
-// order if you don't want to have to write @synthesize yourself. This shouldn't be necessary after the official Clang 2.0 release. More info about that here:
-// http://www.mcubedsw.com/blog/index.php/site/comments/new_objective-c_features/
 
 // Much, much credit given to André Pang and his phenomenal RMModelObject which was the inspiration for this class.
 // https://github.com/andrep/RMModelObject
