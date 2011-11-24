@@ -2,19 +2,18 @@
 #import <objc/runtime.h>
 
 // Holds metadata for subclasses of SMModelObject
-static NSMutableDictionary *keyNames = nil, *nillableKeyNames = nil;
+static NSMutableDictionary *keyNames = nil;
 
 @implementation SMModelObject
 
 // Before this class is first accessed, we'll need to build up our associated metadata, basically
 // just a list of all our property names so we can quickly enumerate through them for various methods.
-// Also we maintain a separate list of property names that can be set to nil (type ID) for fast dealloc.
 + (void) initialize {
 
 	if (!keyNames)
-		keyNames = [NSMutableDictionary new], nillableKeyNames = [NSMutableDictionary new];
+		keyNames = [NSMutableDictionary new];
 	
-	NSMutableArray *names = [NSMutableArray new], *nillableNames = [NSMutableArray new];
+	NSMutableArray *names = [NSMutableArray new];
 	
 	for (Class cls = self; cls != [SMModelObject class]; cls = [cls superclass]) {
 		
@@ -25,27 +24,16 @@ static NSMutableDictionary *keyNames = nil, *nillableKeyNames = nil;
 			Ivar var = vars[i];
 			NSString *name = [[NSString alloc] initWithUTF8String:ivar_getName(var)];
 			[names addObject:name];
-			
-			if (ivar_getTypeEncoding(var)[0] == _C_ID)
-				[nillableNames addObject:name];
-			
-			[name release];
 		}
 		
 		free(vars);
 	}
 	
 	[keyNames setObject:names forKey:self];
-	[nillableKeyNames setObject:nillableNames forKey:self];
-	[names release], [nillableNames release];
 }
 
 - (NSArray *)allKeys {
 	return [keyNames objectForKey:[self class]];
-}
-
-- (NSArray *)nillableKeys {
-	return [nillableKeyNames objectForKey:[self class]];
 }
 
 // NSCoder implementation, for unarchiving
@@ -65,14 +53,6 @@ static NSMutableDictionary *keyNames = nil, *nillableKeyNames = nil;
 		[aCoder encodeObject:[self valueForKey:name] forKey:name];
 }
 
-// Automatic dealloc.
-- (void) dealloc {
-	for (NSString *name in [self nillableKeys])
-		[self setValue:nil forKey:name];
-	
-	[super dealloc];
-}
-
 // NSCopying implementation
 - (id) copyWithZone:(NSZone *)zone {
 	
@@ -85,8 +65,8 @@ static NSMutableDictionary *keyNames = nil, *nillableKeyNames = nil;
 }
 
 // We implement the NSFastEnumeration protocol to behave like an NSDictionary - the enumerated values are our property (key) names.
-- (NSUInteger) countByEnumeratingWithState:(NSFastEnumerationState *)state objects:(id *)stackbuf count:(NSUInteger)len {
-	return [[self allKeys] countByEnumeratingWithState:state objects:stackbuf count:len];
+- (NSUInteger) countByEnumeratingWithState:(NSFastEnumerationState *)state objects:(id __unsafe_unretained [])buffer count:(NSUInteger)len {
+	return [[self allKeys] countByEnumeratingWithState:state objects:buffer count:len];
 }
 
 // Override isEqual to compare model objects by value instead of just by pointer.

@@ -27,7 +27,7 @@
 	SearchResults *results = [SearchResults new];
 	results.totalResults = 74;
 	
-	Book *harryPotter = [[Book new] autorelease];
+	Book *harryPotter = [Book new];
 	harryPotter.title = @"Harry Potter and the Half-Blood Prince";
 	harryPotter.price = 29.95;
 	harryPotter.authors = [NSDictionary dictionaryWithObjectsAndKeys:
@@ -35,7 +35,7 @@
 						   @"Bob's your uncle",@"Secondary",
 						   nil];
 	
-	Book *twilight = [[Book new] autorelease];
+	Book *twilight = [Book new];
 	twilight.title = @"Twilight";
 	twilight.price = 19.95;
 	
@@ -52,7 +52,7 @@
 	
 	// Test that copy produces a new object with copied members.
 	
-	SearchResults *copied = [[results copy] autorelease];
+	SearchResults *copied = [results copy];
 	
 	NSLog(@"Copied: %@", copied);
 	NSLog(@"Copied results have same pointer? %i but are they equal? %i", copied == results, [copied isEqual:results]);
@@ -67,13 +67,6 @@
 	
 	NSLog(@"Decoded: %@", decoded);
 	NSLog(@"Encoded results are equal? %i", [decoded isEqual:results]);
-	
-	// Test that releasing results releases its "books" member.
-	
-	NSArray *books = results.books;
-	int booksRetainCountBeforeParentRelease = [books retainCount];
-	[results release];
-	NSLog(@"Results released. Books array retain count was %i, now %i", booksRetainCountBeforeParentRelease, [books retainCount]);
 }
 
 
