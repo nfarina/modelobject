@@ -10,4 +10,4 @@ http://nfarina.com/post/2061838727/smmodelobject
 
 ### ARC Support
 
-Try the 'master_arc' branch if your project has Automatic Reference Counting (ARC) enabled.
+Try the [master_arc](https://github.com/nfarina/modelobject/tree/master_arc) branch if your project has Automatic Reference Counting (ARC) enabled.
