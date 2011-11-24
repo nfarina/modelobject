@@ -1,3 +1,4 @@
+### Overview
 
 SMModelObject is a very handy superclass for "Model Object" types.
 
@@ -6,3 +7,7 @@ https://github.com/andrep/RMModelObject
 
 More information in the blog post:
 http://nfarina.com/post/2061838727/smmodelobject
+
+### ARC Support
+
+Try the 'master_arc' branch if your project has Automatic Reference Counting (ARC) enabled.
