@@ -32,7 +32,7 @@ static NSMutableDictionary *keyNames = nil;
 	[keyNames setObject:names forKey:self];
 }
 
-- (NSArray *)allKeys {
+- (NSArray *) allKeys {
 	return [keyNames objectForKey:[self class]];
 }
 
@@ -74,6 +74,9 @@ static NSMutableDictionary *keyNames = nil;
 
 	if ([other isKindOfClass:[self class]]) {
 		
+		if ([[self allKeys] containsObject:@"identifier"])
+			return [[self valueForKey:@"identifier"] isEqual:[other valueForKey:@"identifier"]];
+		
 		for (NSString *name in [self allKeys]) {
 			id a = [self valueForKey:name];
 			id b = [other valueForKey:name];
@@ -90,11 +93,14 @@ static NSMutableDictionary *keyNames = nil;
 
 // Must override hash as well, this is taken directly from RMModelObject, basically
 // classes with the same layout return the same number.
-- (NSUInteger)hash {
-	return (NSUInteger)[self allKeys];
+- (NSUInteger) hash {
+	if ([[self allKeys] containsObject:@"identifier"])
+		return [[self valueForKey:@"identifier"] hash];
+	else
+		return (NSUInteger)[self allKeys];
 }
 
-- (void)writeLineBreakToString:(NSMutableString *)string withTabs:(NSUInteger)tabCount {
+- (void) writeLineBreakToString:(NSMutableString *)string withTabs:(NSUInteger)tabCount {
 	[string appendString:@"\n"];
 	for (int i=0;i<tabCount;i++) [string appendString:@"\t"];
 }
