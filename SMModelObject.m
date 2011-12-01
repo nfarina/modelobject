@@ -102,7 +102,7 @@ static NSMutableDictionary *keyNames = nil;
 
 - (void) writeLineBreakToString:(NSMutableString *)string withTabs:(NSUInteger)tabCount {
 	[string appendString:@"\n"];
-	for (int i=0;i<tabCount;i++) [string appendString:@"\t"];
+	for (NSUInteger i=0;i<tabCount;i++) [string appendString:@"\t"];
 }
 
 // Prints description in a nicely-formatted and indented manner.
