@@ -17,16 +17,16 @@ static NSMutableDictionary *keyNames = nil;
 	
 	for (Class cls = self; cls != [SMModelObject class]; cls = [cls superclass]) {
 		
-		unsigned int varCount;
-		Ivar *vars = class_copyIvarList(cls, &varCount);
+		unsigned int count;
+		objc_property_t *properties = class_copyPropertyList(cls, &count);
 		
-		for (int i = 0; i < varCount; i++) {
-			Ivar var = vars[i];
-			NSString *name = [[NSString alloc] initWithUTF8String:ivar_getName(var)];
+		for (unsigned int i = 0; i < count; i++) {
+			objc_property_t property = properties[i];
+			NSString *name = [[NSString alloc] initWithUTF8String:property_getName(property)];
 			[names addObject:name];
 		}
 		
-		free(vars);
+		free(properties);
 	}
 	
 	[keyNames setObject:names forKey:self];
